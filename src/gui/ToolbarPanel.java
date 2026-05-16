@@ -7,16 +7,21 @@ import javax.swing.BorderFactory;
 import java.awt.Color;
 
 public class ToolbarPanel extends JPanel {
-    public ToolbarPanel() {
+    private JButton loadButton;
+    private JButton runButton;
 
+    public ToolbarPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.LIGHT_GRAY);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton loadButton = new JButton("Wczytaj graf");
-        JButton runButton = new JButton("Przelicz (C)");
+        loadButton = new JButton("Wczytaj graf");
+        runButton = new JButton("Przelicz (C)");
 
         add(loadButton);
         add(runButton);
     }
+
+    public JButton getLoadButton() { return loadButton; }
+    public JButton getRunButton() { return runButton; }
 }
