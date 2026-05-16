@@ -17,6 +17,7 @@ public class GraphReader {
         this.inputFilePath = sourceFilePath;
     }
 
+    // TODO
     private void readEdges(String path) throws Exception{
         File file = new File(path);
         Scanner scanner = new Scanner(file);
@@ -41,6 +42,7 @@ public class GraphReader {
         scanner.close();
     }
 
+    // TODO
     private void readNodes(String path) throws Exception {
         File file = new File(path);
         Scanner scanner = new Scanner(file);
