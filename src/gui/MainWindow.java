@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 
 public class MainWindow extends JFrame {
     private GraphCanvas canvas;
@@ -31,6 +32,24 @@ public class MainWindow extends JFrame {
     }
 
     public void initListeners() {
+        toolbar.getShowNodesNamesCheckBox().addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED){
+                canvas.setShowNodesNames(true);
+            }else{
+                canvas.setShowNodesNames(false);
+            }
+            canvas.repaint();
+        });
+
+        toolbar.getShowEdgesWeightsCheckBox().addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED){
+                canvas.setShowEdgeWeights(true);
+            }else{
+                canvas.setShowEdgeWeights(false);
+            }
+            canvas.repaint();
+        });
+
         toolbar.getLoadInputFileButton().addActionListener(e -> {
             inputFilePath = selectFileViaDialog("Wybierz plik z krawędziami");
             if (inputFilePath != null) {

@@ -14,6 +14,10 @@ import java.awt.geom.AffineTransform;
 public class GraphCanvas extends JPanel {
     private double scale = 1;
     private double offsetX = 0, offsetY = 0;
+
+    private boolean showNodesNames = false;
+    private boolean showEdgeWeights = false;
+
     private Graph graph;
 
     public GraphCanvas() {
@@ -104,6 +108,10 @@ public class GraphCanvas extends JPanel {
                 int x2 = (int) edge.getTarget().getX();
                 int y2 = (int) edge.getTarget().getY();
                 graphics2D.drawLine(x1, y1, x2, y2);
+                if (showEdgeWeights){
+                    graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
+                }
+
             }
         }
 
@@ -115,8 +123,18 @@ public class GraphCanvas extends JPanel {
             graphics2D.setColor(Color.RED);
             graphics2D.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 
-            graphics2D.setColor(Color.BLACK);
-            graphics2D.drawString(node.getName(), x - 5, y - radius - 5);
+            if (showNodesNames){
+                graphics2D.setColor(Color.BLACK);
+                graphics2D.drawString(node.getName(), x - 5, y - radius - 5);
+            }
         }
+    }
+
+    public void setShowNodesNames(boolean value){
+        showNodesNames = value;
+    }
+
+    public void setShowEdgeWeights(boolean value){
+        showEdgeWeights = value;
     }
 }

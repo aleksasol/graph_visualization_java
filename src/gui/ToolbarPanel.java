@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ToolbarPanel extends JPanel {
+    private JCheckBox showNodesNamesCheckBox;
+    private JCheckBox showEdgesWeightsCheckBox;
+
     private CardLayout cardLayout;
     private JPanel cards;
 
@@ -18,9 +21,25 @@ public class ToolbarPanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(Color.YELLOW);
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setBackground(Color.YELLOW);
+
+        showNodesNamesCheckBox = new JCheckBox("Pokaż nazwy węzłów");
+        showEdgesWeightsCheckBox = new JCheckBox("Pokaż wagi krawędzi");
+
+        showNodesNamesCheckBox.setBackground(Color.YELLOW);
+        showEdgesWeightsCheckBox.setBackground(Color.YELLOW);
+
         String[] modes = {"Tryb Pasywny", "Tryb Wsadowy"};
         JComboBox<String> modeSelector = new JComboBox<>(modes);
-        add(modeSelector, BorderLayout.NORTH);
+
+        topPanel.add(showNodesNamesCheckBox);
+        topPanel.add(showEdgesWeightsCheckBox);
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(modeSelector);
+
+        add(topPanel, BorderLayout.NORTH);
 
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
@@ -97,5 +116,13 @@ public class ToolbarPanel extends JPanel {
 
     public JComboBox<String> getAlgoSelector() {
         return algorythmSelector;
+    }
+
+    public JCheckBox getShowNodesNamesCheckBox(){
+        return showNodesNamesCheckBox;
+    }
+
+    public JCheckBox getShowEdgesWeightsCheckBox(){
+        return showEdgesWeightsCheckBox;
     }
 }
