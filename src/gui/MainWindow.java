@@ -1,18 +1,18 @@
 package gui;
 
-import integration.IntegrationManager;
-import model.Graph;
+import utils.GraphReader;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
-import java.awt.BorderLayout;
-import java.io.File;
+import java.awt.*;
 
 public class MainWindow extends JFrame {
     private GraphCanvas canvas;
     private ToolbarPanel toolbar;
-    private String selectedFilePath = null;
+
+    private String inputFilePath = null;
+    private String outputFilePath = null;
 
     public MainWindow() {
         setTitle("Wizualizacja Grafów Planarnych");
@@ -27,29 +27,51 @@ public class MainWindow extends JFrame {
         add(toolbar, BorderLayout.WEST);
         add(canvas, BorderLayout.CENTER);
 
-        toolbar.getLoadButton().addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(this);
+        initListeners();
+    }
 
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                selectedFilePath = selectedFile.getAbsolutePath(); // Zapisujemy ścieżkę
-                JOptionPane.showMessageDialog(this, "Wybrano plik:\n" + selectedFilePath);
+    public void initListeners() {
+        toolbar.getLoadInputFileButton().addActionListener(e -> {
+            inputFilePath = selectFileViaDialog("Wybierz plik z krawędziami");
+            if (inputFilePath != null) {
+                toolbar.getLoadInputFileButton().setBackground(Color.GREEN);
+                checkAndRender();
             }
         });
 
-        toolbar.getRunButton().addActionListener(e -> {
-            if (selectedFilePath == null) {
-                JOptionPane.showMessageDialog(this, "wczytaj plik z grafem używając przycisku wyżej!", "Błąd", JOptionPane.WARNING_MESSAGE);
-                return; // Przerywamy, jeśli nie wybrano pliku
+        toolbar.getLoadOutputFileButton().addActionListener(e -> {
+            outputFilePath = selectFileViaDialog("Wybierz plik ze współrzędnymi");
+            if (outputFilePath != null) {
+                toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
+                checkAndRender();
             }
-
-            JOptionPane.showMessageDialog(this, "obliczenia do języka C dla pliku:\n" + selectedFilePath);
-
-            IntegrationManager manager = new IntegrationManager();
-            Graph calculatedGraph = manager.runCProgram(selectedFilePath);
-            canvas.setGraph(calculatedGraph);
         });
+    }
+
+    private String selectFileViaDialog(String dialogTitle) {
+        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
+        fileChooser.setDialogTitle(dialogTitle);
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().getAbsolutePath();
+        }
+        return null;
+    }
+
+    private void checkAndRender() {
+        if (inputFilePath != null && outputFilePath != null) {
+            try {
+                GraphReader reader = new GraphReader(inputFilePath, outputFilePath);
+                reader.readGraph();
+                canvas.setGraph(reader.getGraph());
+                inputFilePath = null;
+                outputFilePath = null;
+                toolbar.getLoadOutputFileButton().setBackground(Color.WHITE);
+                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(this, "Błąd: " + exception.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public GraphCanvas getCanvas() {
