@@ -5,14 +5,20 @@ import model.Graph;
 import model.Node;
 
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 
 public class GraphCanvas extends JPanel {
+    private double scale = 1;
+    private double offsetX = 0, offsetY = 0;
     private Graph graph;
 
     public GraphCanvas() {
-        setBackground(Color.WHITE);
+        setBackground(Color.magenta);
+        initMouseListeners();
     }
 
     public void setGraph(Graph graph) {
@@ -20,28 +26,97 @@ public class GraphCanvas extends JPanel {
         repaint();
     }
 
+    private void initMouseListeners() {
+        MouseAdapter mouseHandler = new MouseAdapter() {
+            private int lastMouseX;
+            private int lastMouseY;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                int deltaX = e.getX() - lastMouseX;
+                int deltaY = e.getY() - lastMouseY;
+
+                offsetX += deltaX;
+                offsetY += deltaY;
+
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+
+                repaint();
+            }
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                super.mouseWheelMoved(e);
+                double zoomFactor = 1.1;
+                double oldScale = scale;
+
+                if (e.getPreciseWheelRotation() < 0) {
+                    scale *= zoomFactor;
+                } else {
+                    scale /= zoomFactor;
+                }
+
+                double mouseX = e.getX();
+                double mouseY = e.getY();
+
+                offsetX = mouseX - (mouseX - offsetX) * (scale / oldScale);
+                offsetY = mouseY - (mouseY - offsetY) * (scale / oldScale);
+
+                repaint();
+            }
+        };
+
+        addMouseListener(mouseHandler);
+        addMouseMotionListener(mouseHandler);
+        addMouseWheelListener(mouseHandler);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (graph == null) return;
-        g.setColor(Color.BLACK);
-        for (Edge edge : graph.getEdges()) {
-            int x1 = (int) edge.getSource().getX();
-            int y1 = (int) edge.getSource().getY();
-            int x2 = (int) edge.getTarget().getX();
-            int y2 = (int) edge.getTarget().getY();
-            g.drawLine(x1, y1, x2, y2);
-        }
-        g.setColor(Color.RED);
-        int radius = 15;
 
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        AffineTransform at = new AffineTransform();
+        at.translate(offsetX, offsetY);
+        at.scale(scale, scale);
+        graphics2D.transform(at);
+
+        if (graph == null) {
+            return;
+        }
+
+        graphics2D.setColor(Color.BLACK);
+        for (Edge edge : graph.getEdges()) {
+            if (edge.getSource() != null && edge.getTarget() != null) {
+                int x1 = (int) edge.getSource().getX();
+                int y1 = (int) edge.getSource().getY();
+                int x2 = (int) edge.getTarget().getX();
+                int y2 = (int) edge.getTarget().getY();
+                graphics2D.drawLine(x1, y1, x2, y2);
+            }
+        }
+
+        int radius = 15;
         for (Node node : graph.getNodes()) {
             int x = (int) node.getX();
             int y = (int) node.getY();
-            g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
-            g.setColor(Color.BLACK);
-            g.drawString(node.getName(), x - 5, y - radius - 5);
-            g.setColor(Color.RED);
+
+            graphics2D.setColor(Color.RED);
+            graphics2D.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+
+            graphics2D.setColor(Color.BLACK);
+            graphics2D.drawString(node.getName(), x - 5, y - radius - 5);
         }
     }
 }
