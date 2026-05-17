@@ -19,10 +19,11 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         setTitle("Wizualizacja Grafów Planarnych");
-        setSize(1000, 800);
+        setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
         canvas = new GraphCanvas();
         toolbar = new ToolbarPanel();
@@ -52,7 +53,7 @@ public class MainWindow extends JFrame {
             canvas.repaint();
         });
 
-        toolbar.getLoadInputFileButton().addActionListener(e -> {
+        toolbar.getLoadInputFileButton().addActionListener(_ -> {
             inputFilePath = selectFileViaDialog("Wybierz plik z krawędziami");
             if (inputFilePath != null) {
                 toolbar.getLoadInputFileButton().setBackground(Color.GREEN);
@@ -60,7 +61,7 @@ public class MainWindow extends JFrame {
             }
         });
 
-        toolbar.getLoadOutputFileButton().addActionListener(e -> {
+        toolbar.getLoadOutputFileButton().addActionListener(_ -> {
             outputFilePath = selectFileViaDialog("Wybierz plik ze współrzędnymi");
             if (outputFilePath != null) {
                 toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
@@ -68,7 +69,7 @@ public class MainWindow extends JFrame {
             }
         });
 
-        toolbar.getRunCButton().addActionListener(e -> {
+        toolbar.getRunCButton().addActionListener(_ -> {
             if (inputFilePath == null) {
                 JOptionPane.showMessageDialog(this, "Najpierw wczytaj plik z krawędziami!", "Błąd", JOptionPane.WARNING_MESSAGE);
                 return;

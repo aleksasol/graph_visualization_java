@@ -21,7 +21,7 @@ public class GraphCanvas extends JPanel {
     private Graph graph;
 
     public GraphCanvas() {
-        setBackground(Color.magenta);
+        setBackground(Color.LIGHT_GRAY);
         initMouseListeners();
     }
 
