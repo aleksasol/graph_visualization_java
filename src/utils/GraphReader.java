@@ -12,19 +12,19 @@ public class GraphReader {
     private String inputFilePath = null;
     private String outputFilePath = null;
 
-    public GraphReader(String sourceFilePath, String targetFilePath){
+    public GraphReader(String sourceFilePath, String targetFilePath) {
         this.outputFilePath = targetFilePath;
         this.inputFilePath = sourceFilePath;
     }
 
     // TODO
-    private void readEdges(String path) throws Exception{
+    private void readEdges(String path) throws Exception {
         File file = new File(path);
         Scanner scanner = new Scanner(file);
 
-        while (scanner.hasNextLine()){
+        while (scanner.hasNextLine()) {
             String currentLine = scanner.nextLine();
-            String [] result = currentLine.split(" ");
+            String[] result = currentLine.split(" ");
 
             String edge_name = result[0];
             String source_node_name = result[1];
@@ -46,9 +46,9 @@ public class GraphReader {
     private void readNodes(String path) throws Exception {
         File file = new File(path);
         Scanner scanner = new Scanner(file);
-        while (scanner.hasNextLine()){
+        while (scanner.hasNextLine()) {
             String currentLine = scanner.nextLine();
-            String [] result = currentLine.split(" ");
+            String[] result = currentLine.split(" ");
 
             String name = result[0];
             Double x = Double.parseDouble(result[1]);

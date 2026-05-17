@@ -22,6 +22,11 @@ public class ToolbarPanel extends JPanel {
         add(runButton);
     }
 
-    public JButton getLoadButton() { return loadButton; }
-    public JButton getRunButton() { return runButton; }
+    public JButton getLoadButton() {
+        return loadButton;
+    }
+
+    public JButton getRunButton() {
+        return runButton;
+    }
 }

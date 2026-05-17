@@ -24,9 +24,9 @@ public class Main {
             testGraph.addNode(n1);
             testGraph.addNode(n2);
             testGraph.addNode(n3);
-            testGraph.addEdge(new Edge(n1, n2, 1.0));
-            testGraph.addEdge(new Edge(n2, n3, 1.0));
-            testGraph.addEdge(new Edge(n3, n1, 1.0));
+            testGraph.addEdge(new Edge("AB", n1, n2, 1.0));
+            testGraph.addEdge(new Edge("BC", n2, n3, 1.0));
+            testGraph.addEdge(new Edge("AC", n3, n1, 1.0));
             window.getCanvas().setGraph(testGraph);
         });
     }

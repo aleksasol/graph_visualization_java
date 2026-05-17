@@ -59,7 +59,7 @@ public class IntegrationManager {
                     }
 
                     if (sourceNode != null && targetNode != null) {
-                        resultGraph.addEdge(new Edge(sourceNode, targetNode, weight));
+                        resultGraph.addEdge(new Edge(edgeName, sourceNode, targetNode, weight));
                     }
                 }
                 edgeScanner.close();

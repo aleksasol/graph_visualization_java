@@ -28,9 +28,9 @@ public class Graph {
         return edges;
     }
 
-    public Node findNodeByName(String nodeName){
-        for (Node node: nodes){
-            if (node.getName().equals(nodeName)){
+    public Node findNodeByName(String nodeName) {
+        for (Node node : nodes) {
+            if (node.getName().equals(nodeName)) {
                 return node;
             }
         }

@@ -14,10 +14,12 @@ public class GraphCanvas extends JPanel {
     public GraphCanvas() {
         setBackground(Color.WHITE);
     }
+
     public void setGraph(Graph graph) {
         this.graph = graph;
         repaint();
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
