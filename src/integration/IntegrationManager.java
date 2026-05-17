@@ -1,15 +1,11 @@
 package integration;
 
-import model.Edge;
 import model.Graph;
-import model.Node;
 import utils.GraphReader;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Scanner;
 
 public class IntegrationManager extends SwingWorker<Graph, Void> {
 

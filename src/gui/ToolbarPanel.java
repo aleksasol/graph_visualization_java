@@ -27,15 +27,18 @@ public class ToolbarPanel extends JPanel {
 
         showNodesNamesCheckBox = new JCheckBox("Pokaż nazwy węzłów");
         showEdgesWeightsCheckBox = new JCheckBox("Pokaż wagi krawędzi");
+        loadInputFileButton = new JButton("Wczytaj krawędzie");
 
         showNodesNamesCheckBox.setBackground(Color.YELLOW);
         showEdgesWeightsCheckBox.setBackground(Color.YELLOW);
+        loadInputFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         String[] modes = {"Tryb Pasywny", "Tryb Wsadowy"};
         JComboBox<String> modeSelector = new JComboBox<>(modes);
 
         topPanel.add(showNodesNamesCheckBox);
         topPanel.add(showEdgesWeightsCheckBox);
+        topPanel.add(loadInputFileButton);
         topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(modeSelector);
 
@@ -65,13 +68,10 @@ public class ToolbarPanel extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.BLUE);
 
-        loadInputFileButton = new JButton("Wczytaj krawędzie");
         loadOutputFileButton = new JButton("Wczytaj współrzędne");
 
-        loadInputFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loadOutputFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        panel.add(loadInputFileButton);
         panel.add(Box.createVerticalStrut(10));
         panel.add(loadOutputFileButton);
 
@@ -93,10 +93,6 @@ public class ToolbarPanel extends JPanel {
         JLabel label = new JLabel("Wybierz algorytm:");
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        loadInputFileButton = new JButton("Wczytaj krawędzie");
-        loadInputFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(loadInputFileButton);
-        panel.add(Box.createVerticalStrut(10));
         panel.add(label);
         panel.add(Box.createVerticalStrut(5));
         panel.add(algorythmSelector);

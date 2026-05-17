@@ -99,6 +99,8 @@ public class MainWindow extends JFrame {
                 }
             };
             worker.execute();
+            inputFilePath = null;
+            toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
         });
     }
 
