@@ -1,5 +1,7 @@
 package gui;
 
+import integration.IntegrationManager;
+import model.Graph;
 import utils.GraphReader;
 
 import javax.swing.JFrame;
@@ -64,6 +66,39 @@ public class MainWindow extends JFrame {
                 toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
                 checkAndRender();
             }
+        });
+
+        toolbar.getRunCButton().addActionListener(e -> {
+            if (inputFilePath == null) {
+                JOptionPane.showMessageDialog(this, "Najpierw wczytaj plik z krawędziami!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            toolbar.getRunCButton().setEnabled(false);
+            toolbar.getAlgoSelector().setEnabled(false);
+
+            String outputFilePath = "engine/wynik.txt";
+            String selectedAlgo = (String) toolbar.getAlgoSelector().getSelectedItem();
+            System.out.println(selectedAlgo);
+
+            IntegrationManager worker = new IntegrationManager(inputFilePath, outputFilePath, selectedAlgo, () -> {
+                toolbar.getRunCButton().setEnabled(true);
+                toolbar.getAlgoSelector().setEnabled(true);
+            }){
+                @Override
+                protected void done(){
+                    super.done();
+                    try {
+                        if (!isCancelled()) {
+                            Graph calculatedGraph = get();
+                            canvas.setGraph(calculatedGraph);
+                        }
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            };
+            worker.execute();
         });
     }
 

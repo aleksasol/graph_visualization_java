@@ -93,6 +93,10 @@ public class ToolbarPanel extends JPanel {
         JLabel label = new JLabel("Wybierz algorytm:");
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        loadInputFileButton = new JButton("Wczytaj krawędzie");
+        loadInputFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(loadInputFileButton);
+        panel.add(Box.createVerticalStrut(10));
         panel.add(label);
         panel.add(Box.createVerticalStrut(5));
         panel.add(algorythmSelector);

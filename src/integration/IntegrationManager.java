@@ -3,73 +3,82 @@ package integration;
 import model.Edge;
 import model.Graph;
 import model.Node;
+import utils.GraphReader;
 
+import javax.swing.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class IntegrationManager {
+public class IntegrationManager extends SwingWorker<Graph, Void> {
 
-    public Graph runCProgram(String inputFilePath) {
-        Graph resultGraph = new Graph();
-        String outputFileName = "wynik.txt";
+    private String inputFilePath;
+    private String outputFilePath;
+    private String algorithm;
+    private Runnable onComplete;
 
-        try {
-            ProcessBuilder builder = new ProcessBuilder("./graphProcessor", "-i", inputFilePath, "-o", outputFileName);
-            builder.directory(new File("engine"));
-            builder.inheritIO();
+    HashMap<String, String> algorithms = new HashMap<String, String>();
 
-            System.out.println("Uruchamiam program w C...");
-            Process process = builder.start();
-            process.waitFor();
-            System.out.println("Program w C zakończył pracę!");
+    public IntegrationManager(String inputFilePath, String outputFilePath, String algorithm, Runnable onComplete) {
+        this.inputFilePath = inputFilePath;
+        this.outputFilePath = outputFilePath;
+        this.algorithm = algorithm;
+        this.onComplete = onComplete;
 
-            File outputFile = new File("engine/" + outputFileName);
-            if (outputFile.exists()) {
-                Scanner scanner = new Scanner(outputFile);
-                scanner.useLocale(Locale.US);
+        algorithms.put("Fruchterman-Reingold", "FR");
+        algorithms.put("Tutte", "TU");
+    }
 
-                while (scanner.hasNextInt()) {
-                    int id = scanner.nextInt();
-                    double x = scanner.nextDouble();
-                    double y = scanner.nextDouble();
+    @Override
+    protected Graph doInBackground() throws Exception {
+        System.out.println("Uruchamiam program w C... Algorytm: " + algorithm);
 
-                    resultGraph.addNode(new Node(String.valueOf(id), x * 7, y * 7));
-                }
-                scanner.close();
-                System.out.println("Wczytano wierzchołki!");
-            }
-            File inputFile = new File(inputFilePath);
-            if (inputFile.exists()) {
-                Scanner edgeScanner = new Scanner(inputFile);
-                edgeScanner.useLocale(Locale.US);
+        File rootDir = new File(System.getProperty("user.dir"));
+        File engineDir = new File(rootDir, "engine");
+        File exeFile = new File(engineDir, "graphProcessor.exe");
 
-                while (edgeScanner.hasNext()) {
-                    String edgeName = edgeScanner.next(); // np. "k1"
-                    String n1Name = String.valueOf(edgeScanner.nextInt()); // "1"
-                    String n2Name = String.valueOf(edgeScanner.nextInt()); // "2"
-                    double weight = edgeScanner.nextDouble(); // "1.0"
+        File inputFile = new File(inputFilePath);
+        File outputFile = new File("engine", "results.txt");
 
-                    Node sourceNode = null;
-                    Node targetNode = null;
+        ProcessBuilder builder = new ProcessBuilder(exeFile.getAbsolutePath(),
+                "-i", inputFile.getAbsolutePath(),
+                "-o", outputFile.getAbsolutePath(),
+                "-algo", algorithms.get(algorithm)
+        );
 
-                    for (Node node : resultGraph.getNodes()) {
-                        if (node.getName().equals(n1Name)) sourceNode = node;
-                        if (node.getName().equals(n2Name)) targetNode = node;
-                    }
+        builder.directory(engineDir);
+        builder.inheritIO();
 
-                    if (sourceNode != null && targetNode != null) {
-                        resultGraph.addEdge(new Edge(edgeName, sourceNode, targetNode, weight));
-                    }
-                }
-                edgeScanner.close();
-                System.out.println("Wczytano krawędzie!");
-            }
+        Process process = builder.start();
+        int exitCode = process.waitFor();
 
-        } catch (Exception e) {
-            System.out.println("Błąd: " + e.getMessage());
+        if (exitCode != 0) {
+            throw new RuntimeException("Proces C zakończył się błędem. Kod wyjścia: " + exitCode);
         }
 
-        return resultGraph;
+        System.out.println("Program w C zakończył pracę!");
+
+        GraphReader reader = new GraphReader(inputFile.toString(), outputFile.toString());
+        reader.readGraph();
+
+        return reader.getGraph();
+    }
+
+    @Override
+    protected void done() {
+        try {
+            Graph resultGraph = get();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Błąd podczas obliczeń: " + e.getMessage(),
+                    "Błąd",
+                    JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        }
     }
 }
