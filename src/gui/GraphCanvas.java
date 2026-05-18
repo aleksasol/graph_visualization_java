@@ -34,11 +34,19 @@ public class GraphCanvas extends JPanel {
     }
 
     public void setNodeColor(Color color){
+        if (color == null) {
+            System.err.println("Kolor węzła nie może być null");
+            return;
+        }
         nodeColor = color;
         repaint();
     }
 
     public void setEdgeColor(Color color){
+        if (color == null) {
+            System.err.println("Kolor krawędzi nie może być null");
+            return;
+        }
         edgeColor = color;
         repaint();
     }
@@ -101,46 +109,65 @@ public class GraphCanvas extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        try {
+            Graphics2D graphics2D = (Graphics2D) g;
+            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        AffineTransform at = new AffineTransform();
-        at.translate(offsetX, offsetY);
-        at.scale(scale, scale);
-        graphics2D.transform(at);
+            AffineTransform at = new AffineTransform();
+            at.translate(offsetX, offsetY);
+            at.scale(scale, scale);
+            graphics2D.transform(at);
 
-        if (graph == null) {
-            return;
-        }
+            if (graph == null) {
+                return;
+            }
 
-        for (Edge edge : graph.getEdges()) {
-            graphics2D.setColor(edgeColor);
-            if (edge.getSource() != null && edge.getTarget() != null) {
-                int x1 = (int) edge.getSource().getX();
-                int y1 = (int) edge.getSource().getY();
-                int x2 = (int) edge.getTarget().getX();
-                int y2 = (int) edge.getTarget().getY();
-                graphics2D.drawLine(x1, y1, x2, y2);
-                if (showEdgeWeights){
-                    graphics2D.setColor(Color.BLACK);
-                    graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
+            if (graph.getEdges() != null) {
+                for (Edge edge : graph.getEdges()) {
+                    if (edge == null) {
+                        System.err.println("Krawędź jest null");
+                        continue;
+                    }
+
+                    graphics2D.setColor(edgeColor);
+                    if (edge.getSource() != null && edge.getTarget() != null) {
+                        int x1 = (int) edge.getSource().getX();
+                        int y1 = (int) edge.getSource().getY();
+                        int x2 = (int) edge.getTarget().getX();
+                        int y2 = (int) edge.getTarget().getY();
+                        graphics2D.drawLine(x1, y1, x2, y2);
+                        
+                        if (showEdgeWeights){
+                            graphics2D.setColor(Color.BLACK);
+                            graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
+                        }
+                    }
                 }
-
             }
-        }
 
-        int radius = 15;
-        for (Node node : graph.getNodes()) {
-            int x = (int) node.getX();
-            int y = (int) node.getY();
+            int radius = 15;
+            if (graph.getNodes() != null) {
+                for (Node node : graph.getNodes()) {
+                    if (node == null) {
+                        System.err.println("Węzeł jest null");
+                        continue;
+                    }
 
-            graphics2D.setColor(nodeColor);
-            graphics2D.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+                    int x = (int) node.getX();
+                    int y = (int) node.getY();
 
-            if (showNodesNames){
-                graphics2D.setColor(Color.BLACK);
-                graphics2D.drawString(node.getName(), x - 5, y - radius - 5);
+                    graphics2D.setColor(nodeColor);
+                    graphics2D.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+
+                    if (showNodesNames){
+                        graphics2D.setColor(Color.BLACK);
+                        graphics2D.drawString(node.getName(), x - 5, y - radius - 5);
+                    }
+                }
             }
+        } catch (Exception ex) {
+            System.err.println("Błąd podczas rysowania grafu: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

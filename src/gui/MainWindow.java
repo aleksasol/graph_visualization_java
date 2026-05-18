@@ -34,103 +34,137 @@ public class MainWindow extends JFrame {
 
     public void initListeners() {
         toolbar.getShowNodesNamesCheckBox().addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED){
-                canvas.setShowNodesNames(true);
-            }else{
-                canvas.setShowNodesNames(false);
+            try {
+                canvas.setShowNodesNames(e.getStateChange() == ItemEvent.SELECTED);
+            } catch (Exception ex) {
+                System.err.println("Błąd przy zmianie wyświetlania nazw węzłów: " + ex.getMessage());
             }
         });
 
         toolbar.getShowEdgesWeightsCheckBox().addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED){
-                canvas.setShowEdgeWeights(true);
-            }else{
-                canvas.setShowEdgeWeights(false);
+            try {
+                canvas.setShowEdgeWeights(e.getStateChange() == ItemEvent.SELECTED);
+            } catch (Exception ex) {
+                System.err.println("Błąd przy zmianie wyświetlania wag krawędzi: " + ex.getMessage());
             }
         });
 
         toolbar.getLoadInputFileButton().addActionListener(_ -> {
-            inputFilePath = selectFileViaDialog("Wybierz plik z krawędziami");
-            if (inputFilePath != null) {
-                toolbar.getLoadInputFileButton().setBackground(Color.GREEN);
-                checkAndRender();
+            try {
+                inputFilePath = selectFileViaDialog("Wybierz plik z krawędziami");
+                if (inputFilePath != null) {
+                    toolbar.getLoadInputFileButton().setBackground(Color.GREEN);
+                    checkAndRender();
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd przy wczytywaniu pliku: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         toolbar.getLoadOutputFileButton().addActionListener(_ -> {
-            outputFilePath = selectFileViaDialog("Wybierz plik ze współrzędnymi");
-            if (outputFilePath != null) {
-                toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
-                checkAndRender();
+            try {
+                outputFilePath = selectFileViaDialog("Wybierz plik ze współrzędnymi");
+                if (outputFilePath != null) {
+                    toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
+                    checkAndRender();
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd przy wczytywaniu pliku: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         toolbar.getChooseNodeColorButton().addActionListener(_ -> {
-            Color nodeSelectedColor = JColorChooser.showDialog(
-                    this,
-                    "Wybierz color",
-                    toolbar.getNodeColorIndicator().getBackground()
-            );
-            if (nodeSelectedColor != null){
-                toolbar.getNodeColorIndicator().setBackground(nodeSelectedColor);
-                canvas.setNodeColor(nodeSelectedColor);
+            try {
+                Color nodeSelectedColor = JColorChooser.showDialog(
+                        this,
+                        "Wybierz kolor",
+                        toolbar.getNodeColorIndicator().getBackground()
+                );
+                if (nodeSelectedColor != null){
+                    toolbar.getNodeColorIndicator().setBackground(nodeSelectedColor);
+                    canvas.setNodeColor(nodeSelectedColor);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd przy wyborze koloru: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         toolbar.getChooseEdgeColorButton().addActionListener(_ -> {
-            Color edgeSelectedColor = JColorChooser.showDialog(
-                    this,
-                    "Wybierz color",
-                    toolbar.getEdgeColorIndicator().getBackground()
-            );
-            if (edgeSelectedColor != null){
-                toolbar.getEdgeColorIndicator().setBackground(edgeSelectedColor);
-                canvas.setEdgeColor(edgeSelectedColor);
+            try {
+                Color edgeSelectedColor = JColorChooser.showDialog(
+                        this,
+                        "Wybierz kolor",
+                        toolbar.getEdgeColorIndicator().getBackground()
+                );
+                if (edgeSelectedColor != null){
+                    toolbar.getEdgeColorIndicator().setBackground(edgeSelectedColor);
+                    canvas.setEdgeColor(edgeSelectedColor);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd przy wyborze koloru: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         toolbar.getRunCButton().addActionListener(_ -> {
-            if (inputFilePath == null) {
-                JOptionPane.showMessageDialog(this, "Najpierw wczytaj plik z krawędziami!", "Błąd", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+            try {
+                if (inputFilePath == null || inputFilePath.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Najpierw wczytaj plik z krawędziami!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
-            toolbar.getRunCButton().setEnabled(false);
-            toolbar.getAlgoSelector().setEnabled(false);
+                toolbar.getRunCButton().setEnabled(false);
+                toolbar.getAlgoSelector().setEnabled(false);
 
-            String outputFilePath = "engine/wynik.txt";
-            String selectedAlgo = (String) toolbar.getAlgoSelector().getSelectedItem();
-            System.out.println(selectedAlgo);
+                String outputFilePath = "engine/wynik.txt";
+                String selectedAlgo = (String) toolbar.getAlgoSelector().getSelectedItem();
+                
+                if (selectedAlgo == null) {
+                    throw new IllegalArgumentException("Nie wybrano algorytmu");
+                }
+                
+                System.out.println("Wybrany algorytm: " + selectedAlgo);
 
-            IntegrationManager worker = new IntegrationManager(inputFilePath, outputFilePath, selectedAlgo, () -> {
+                IntegrationManager worker = new IntegrationManager(inputFilePath, outputFilePath, selectedAlgo, () -> {
+                    toolbar.getRunCButton().setEnabled(true);
+                    toolbar.getAlgoSelector().setEnabled(true);
+                }){
+                    @Override
+                    protected void done(){
+                        super.done();
+                        try {
+                            if (!isCancelled()) {
+                                Graph calculatedGraph = get();
+                                if (calculatedGraph != null) {
+                                    canvas.setGraph(calculatedGraph);
+                                }
+                            }
+                        } catch (Exception exception) {
+                            System.err.println("Błąd podczas ustawiania grafu na canvas: " + exception.getMessage());
+                            exception.printStackTrace();
+                        }
+                    }
+                };
+                worker.execute();
+                inputFilePath = null;
+                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
                 toolbar.getRunCButton().setEnabled(true);
                 toolbar.getAlgoSelector().setEnabled(true);
-            }){
-                @Override
-                protected void done(){
-                    super.done();
-                    try {
-                        if (!isCancelled()) {
-                            Graph calculatedGraph = get();
-                            canvas.setGraph(calculatedGraph);
-                        }
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                    }
-                }
-            };
-            worker.execute();
-            inputFilePath = null;
-            toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+            }
         });
     }
 
     private String selectFileViaDialog(String dialogTitle) {
-        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
-        fileChooser.setDialogTitle(dialogTitle);
-        int userSelection = fileChooser.showOpenDialog(this);
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            return fileChooser.getSelectedFile().getAbsolutePath();
+        try {
+            JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
+            fileChooser.setDialogTitle(dialogTitle);
+            int userSelection = fileChooser.showOpenDialog(this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                return fileChooser.getSelectedFile().getAbsolutePath();
+            }
+        } catch (Exception ex) {
+            System.err.println("Błąd przy otwieraniu okna dialogowego: " + ex.getMessage());
         }
         return null;
     }
@@ -138,15 +172,31 @@ public class MainWindow extends JFrame {
     private void checkAndRender() {
         if (inputFilePath != null && outputFilePath != null) {
             try {
+                if (inputFilePath.isEmpty() || outputFilePath.isEmpty()) {
+                    throw new IllegalArgumentException("Ścieżki do plików nie mogą być puste");
+                }
+
                 GraphReader reader = new GraphReader(inputFilePath, outputFilePath);
                 reader.readGraph();
-                canvas.setGraph(reader.getGraph());
+                
+                Graph graph = reader.getGraph();
+                if (graph == null) {
+                    throw new RuntimeException("Graf nie mógł być załadowany");
+                }
+
+                canvas.setGraph(graph);
                 inputFilePath = null;
                 outputFilePath = null;
                 toolbar.getLoadOutputFileButton().setBackground(Color.WHITE);
                 toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
             } catch (Exception exception) {
+                System.err.println("Błąd przy wczytywaniu grafu: " + exception.getMessage());
+                exception.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Błąd: " + exception.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+                inputFilePath = null;
+                outputFilePath = null;
+                toolbar.getLoadOutputFileButton().setBackground(Color.WHITE);
+                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
             }
         }
     }

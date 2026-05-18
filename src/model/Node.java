@@ -6,6 +6,9 @@ public class Node {
     private double y;
 
     public Node(String name, double x, double y) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Nazwa węzła nie może być pusta");
+        }
         this.name = name;
         this.x = x;
         this.y = y;
