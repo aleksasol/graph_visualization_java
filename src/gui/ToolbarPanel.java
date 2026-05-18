@@ -11,6 +11,10 @@ public class ToolbarPanel extends JPanel {
     private JPanel cards;
 
     private JButton loadInputFileButton;
+
+    private JButton chooseNodeColorButton;
+    private JPanel nodeColorIndicator;
+
     private JButton loadOutputFileButton;
 
     private JComboBox<String> algorythmSelector;
@@ -50,6 +54,20 @@ public class ToolbarPanel extends JPanel {
         buttonPanel.setBackground(BACKGROUND_COLOR);
         buttonPanel.add(loadInputFileButton);
 
+        JPanel nodeColorPickerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        nodeColorPickerPanel.setBackground(BACKGROUND_COLOR);
+
+        nodeColorIndicator = new JPanel();
+        nodeColorIndicator.setPreferredSize(new Dimension(20, 20));
+        nodeColorIndicator.setBackground(Color.RED);
+        nodeColorIndicator.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        chooseNodeColorButton = new JButton("Wybierz kolor węzłów");
+        styleButton(chooseNodeColorButton);
+
+        nodeColorPickerPanel.add(nodeColorIndicator);
+        nodeColorPickerPanel.add(chooseNodeColorButton);
+
         String[] modes = {"Tryb Pasywny", "Tryb Wsadowy"};
         JComboBox<String> modeSelector = new JComboBox<>(modes);
         modeSelector.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
@@ -65,9 +83,11 @@ public class ToolbarPanel extends JPanel {
         topPanel.add(checkboxShowNodesNamesPanel);
         topPanel.add(Box.createVerticalStrut(5));
         topPanel.add(checkboxShowEdgesWeightsPanel);
-        topPanel.add(Box.createVerticalStrut(15));
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(nodeColorPickerPanel);
+        topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(buttonPanel);
-        topPanel.add(Box.createVerticalStrut(20));
+        topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(modePanel);
         topPanel.add(Box.createVerticalStrut(5));
         topPanel.add(modeSelectorPanel);
@@ -186,5 +206,13 @@ public class ToolbarPanel extends JPanel {
 
     public JCheckBox getShowEdgesWeightsCheckBox(){
         return showEdgesWeightsCheckBox;
+    }
+
+    public JButton getChooseNodeColorButton(){
+        return chooseNodeColorButton;
+    }
+
+    public JPanel getNodeColorIndicator(){
+        return nodeColorIndicator;
     }
 }

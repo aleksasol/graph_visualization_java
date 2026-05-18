@@ -4,9 +4,7 @@ import integration.IntegrationManager;
 import model.Graph;
 import utils.GraphReader;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 
@@ -66,6 +64,18 @@ public class MainWindow extends JFrame {
             if (outputFilePath != null) {
                 toolbar.getLoadOutputFileButton().setBackground(Color.GREEN);
                 checkAndRender();
+            }
+        });
+
+        toolbar.getChooseNodeColorButton().addActionListener(_ -> {
+            Color nodeSelectedColor = JColorChooser.showDialog(
+                    this,
+                    "Wybierz color",
+                    toolbar.getNodeColorIndicator().getBackground()
+            );
+            if (nodeSelectedColor != null){
+                toolbar.getNodeColorIndicator().setBackground(nodeSelectedColor);
+                canvas.setNodeColor(nodeSelectedColor);
             }
         });
 

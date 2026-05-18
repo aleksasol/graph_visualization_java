@@ -18,6 +18,8 @@ public class GraphCanvas extends JPanel {
     private boolean showNodesNames = false;
     private boolean showEdgeWeights = false;
 
+    private Color nodeColor = Color.RED;
+
     private Graph graph;
 
     public GraphCanvas() {
@@ -27,6 +29,11 @@ public class GraphCanvas extends JPanel {
 
     public void setGraph(Graph graph) {
         this.graph = graph;
+        repaint();
+    }
+
+    public void setNodeColor(Color color){
+        nodeColor = color;
         repaint();
     }
 
@@ -120,7 +127,7 @@ public class GraphCanvas extends JPanel {
             int x = (int) node.getX();
             int y = (int) node.getY();
 
-            graphics2D.setColor(Color.RED);
+            graphics2D.setColor(nodeColor);
             graphics2D.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 
             if (showNodesNames){
