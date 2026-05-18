@@ -39,7 +39,6 @@ public class MainWindow extends JFrame {
             }else{
                 canvas.setShowNodesNames(false);
             }
-            canvas.repaint();
         });
 
         toolbar.getShowEdgesWeightsCheckBox().addItemListener(e -> {
@@ -48,7 +47,6 @@ public class MainWindow extends JFrame {
             }else{
                 canvas.setShowEdgeWeights(false);
             }
-            canvas.repaint();
         });
 
         toolbar.getLoadInputFileButton().addActionListener(_ -> {
@@ -76,6 +74,18 @@ public class MainWindow extends JFrame {
             if (nodeSelectedColor != null){
                 toolbar.getNodeColorIndicator().setBackground(nodeSelectedColor);
                 canvas.setNodeColor(nodeSelectedColor);
+            }
+        });
+
+        toolbar.getChooseEdgeColorButton().addActionListener(_ -> {
+            Color edgeSelectedColor = JColorChooser.showDialog(
+                    this,
+                    "Wybierz color",
+                    toolbar.getEdgeColorIndicator().getBackground()
+            );
+            if (edgeSelectedColor != null){
+                toolbar.getEdgeColorIndicator().setBackground(edgeSelectedColor);
+                canvas.setEdgeColor(edgeSelectedColor);
             }
         });
 

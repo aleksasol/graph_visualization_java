@@ -15,6 +15,9 @@ public class ToolbarPanel extends JPanel {
     private JButton chooseNodeColorButton;
     private JPanel nodeColorIndicator;
 
+    private JButton chooseEdgeColorButton;
+    private JPanel edgeColorIndicator;
+
     private JButton loadOutputFileButton;
 
     private JComboBox<String> algorythmSelector;
@@ -68,6 +71,20 @@ public class ToolbarPanel extends JPanel {
         nodeColorPickerPanel.add(nodeColorIndicator);
         nodeColorPickerPanel.add(chooseNodeColorButton);
 
+        JPanel edgeColorPickerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        edgeColorPickerPanel.setBackground(BACKGROUND_COLOR);
+
+        edgeColorIndicator = new JPanel();
+        edgeColorIndicator.setPreferredSize(new Dimension(20, 20));
+        edgeColorIndicator.setBackground(Color.BLACK);
+        edgeColorIndicator.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        chooseEdgeColorButton = new JButton("Wybierz kolor krawędzi");
+        styleButton(chooseEdgeColorButton);
+
+        edgeColorPickerPanel.add(edgeColorIndicator);
+        edgeColorPickerPanel.add(chooseEdgeColorButton);
+
         String[] modes = {"Tryb Pasywny", "Tryb Wsadowy"};
         JComboBox<String> modeSelector = new JComboBox<>(modes);
         modeSelector.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
@@ -85,6 +102,8 @@ public class ToolbarPanel extends JPanel {
         topPanel.add(checkboxShowEdgesWeightsPanel);
         topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(nodeColorPickerPanel);
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(edgeColorPickerPanel);
         topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(buttonPanel);
         topPanel.add(Box.createVerticalStrut(10));
@@ -214,5 +233,13 @@ public class ToolbarPanel extends JPanel {
 
     public JPanel getNodeColorIndicator(){
         return nodeColorIndicator;
+    }
+
+    public JPanel getEdgeColorIndicator() {
+        return edgeColorIndicator;
+    }
+
+    public JButton getChooseEdgeColorButton() {
+        return chooseEdgeColorButton;
     }
 }

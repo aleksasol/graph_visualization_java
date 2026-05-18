@@ -19,6 +19,7 @@ public class GraphCanvas extends JPanel {
     private boolean showEdgeWeights = false;
 
     private Color nodeColor = Color.RED;
+    private Color edgeColor = Color.BLACK;
 
     private Graph graph;
 
@@ -34,6 +35,11 @@ public class GraphCanvas extends JPanel {
 
     public void setNodeColor(Color color){
         nodeColor = color;
+        repaint();
+    }
+
+    public void setEdgeColor(Color color){
+        edgeColor = color;
         repaint();
     }
 
@@ -107,8 +113,8 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-        graphics2D.setColor(Color.BLACK);
         for (Edge edge : graph.getEdges()) {
+            graphics2D.setColor(edgeColor);
             if (edge.getSource() != null && edge.getTarget() != null) {
                 int x1 = (int) edge.getSource().getX();
                 int y1 = (int) edge.getSource().getY();
@@ -116,6 +122,7 @@ public class GraphCanvas extends JPanel {
                 int y2 = (int) edge.getTarget().getY();
                 graphics2D.drawLine(x1, y1, x2, y2);
                 if (showEdgeWeights){
+                    graphics2D.setColor(Color.BLACK);
                     graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
                 }
 
@@ -139,9 +146,11 @@ public class GraphCanvas extends JPanel {
 
     public void setShowNodesNames(boolean value){
         showNodesNames = value;
+        repaint();
     }
 
     public void setShowEdgeWeights(boolean value){
         showEdgeWeights = value;
+        repaint();
     }
 }
