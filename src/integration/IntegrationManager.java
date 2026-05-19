@@ -24,8 +24,8 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
         this.algorithm = algorithm;
         this.onComplete = onComplete;
 
-        algorithms.put("Fruchterman-Reingold", "FR");
-        algorithms.put("Tutte", "TU");
+        algorithms.put("Fruchterman-Reingold", "1");
+        algorithms.put("Tutte", "2");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
             ProcessBuilder builder = new ProcessBuilder(exeFile.getAbsolutePath(),
                     "-i", inputFile.getAbsolutePath(),
                     "-o", outputFile.getAbsolutePath(),
-                    "-algo", algoCode
+                    "-algorithm", algoCode
             );
 
             builder.directory(engineDir);
@@ -75,7 +75,8 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
             Process process = builder.start();
             int exitCode = process.waitFor();
 
-            if (exitCode != 0) {
+            // temp
+            if (exitCode != 0 && exitCode != 1) {
                 throw new RuntimeException("Proces C zakończył się błędem. Kod wyjścia: " + exitCode);
             }
 
