@@ -146,7 +146,7 @@ public class MainWindow extends JFrame {
                 };
                 worker.execute();
                 inputFilePath = null;
-                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+                toolbar.styleButton(toolbar.getLoadInputFileButton());
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Błąd: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
                 toolbar.getRunCButton().setEnabled(true);
@@ -187,16 +187,16 @@ public class MainWindow extends JFrame {
                 canvas.setGraph(graph);
                 inputFilePath = null;
                 outputFilePath = null;
-                toolbar.getLoadOutputFileButton().setBackground(Color.WHITE);
-                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+                toolbar.styleButton(toolbar.getLoadOutputFileButton());
+                toolbar.styleButton(toolbar.getLoadInputFileButton());
             } catch (Exception exception) {
                 System.err.println("Błąd przy wczytywaniu grafu: " + exception.getMessage());
                 exception.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Błąd: " + exception.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
                 inputFilePath = null;
                 outputFilePath = null;
-                toolbar.getLoadOutputFileButton().setBackground(Color.WHITE);
-                toolbar.getLoadInputFileButton().setBackground(Color.WHITE);
+                toolbar.styleButton(toolbar.getLoadOutputFileButton());
+                toolbar.styleButton(toolbar.getLoadInputFileButton());
             }
         }
     }

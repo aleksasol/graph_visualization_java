@@ -87,11 +87,13 @@ public class ToolbarPanel extends JPanel {
 
         String[] modes = {"Tryb Pasywny", "Tryb Wsadowy"};
         JComboBox<String> modeSelector = new JComboBox<>(modes);
+        modeSelector.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        modeSelector.setMinimumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         modeSelector.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
 
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         modePanel.setBackground(BACKGROUND_COLOR);
-        modePanel.add(new JLabel("Tryb:"));
+        modePanel.add(new JLabel("Wybierz tryb:"));
 
         JPanel modeSelectorPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         modeSelectorPanel.setBackground(BACKGROUND_COLOR);
@@ -133,7 +135,7 @@ public class ToolbarPanel extends JPanel {
         });
     }
 
-    private void styleButton(JButton button) {
+    public void styleButton(JButton button) {
         button.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         button.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         button.setMinimumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
@@ -194,9 +196,9 @@ public class ToolbarPanel extends JPanel {
 
         panel.add(Box.createVerticalStrut(10));
         panel.add(labelWrapper);
-        panel.add(Box.createVerticalStrut(8));
+        panel.add(Box.createVerticalStrut(4));
         panel.add(comboBoxWrapper);
-        panel.add(Box.createVerticalStrut(20));
+        panel.add(Box.createVerticalStrut(8));
         panel.add(buttonWrapper);
         panel.add(Box.createVerticalGlue());
 
