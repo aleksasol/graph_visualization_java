@@ -60,7 +60,7 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
             throw new FileNotFoundException("Plik wejściowy nie znaleziony: " + inputFilePath);
         }
 
-        File outputFile = new File("engine", "results.txt");
+        File outputFile = new File(outputFilePath);
 
         try {
             ProcessBuilder builder = new ProcessBuilder(exeFile.getAbsolutePath(),
@@ -75,7 +75,6 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
             Process process = builder.start();
             int exitCode = process.waitFor();
 
-            // temp
             if (exitCode != 0 && exitCode != 1) {
                 throw new RuntimeException("Proces C zakończył się błędem. Kod wyjścia: " + exitCode);
             }

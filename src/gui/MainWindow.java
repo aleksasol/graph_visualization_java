@@ -7,6 +7,7 @@ import utils.GraphReader;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.io.File;
 
 public class MainWindow extends JFrame {
     private GraphCanvas canvas;
@@ -115,14 +116,12 @@ public class MainWindow extends JFrame {
                 toolbar.getRunCButton().setEnabled(false);
                 toolbar.getAlgoSelector().setEnabled(false);
 
-                String outputFilePath = "engine/wynik.txt";
+                String outputFilePath = "engine/results.txt";
                 String selectedAlgo = (String) toolbar.getAlgoSelector().getSelectedItem();
                 
                 if (selectedAlgo == null) {
                     throw new IllegalArgumentException("Nie wybrano algorytmu");
                 }
-                
-                System.out.println("Wybrany algorytm: " + selectedAlgo);
 
                 IntegrationManager worker = new IntegrationManager(inputFilePath, outputFilePath, selectedAlgo, () -> {
                     toolbar.getRunCButton().setEnabled(true);

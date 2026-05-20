@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 public class GraphCanvas extends JPanel {
     private double scale = 1;
@@ -22,6 +23,8 @@ public class GraphCanvas extends JPanel {
     private Color edgeColor = Color.BLACK;
 
     private Graph graph;
+    private Node draggedNode = null;
+    private int dragRadius = 15;
 
     public GraphCanvas() {
         setBackground(Color.LIGHT_GRAY);
@@ -61,11 +64,22 @@ public class GraphCanvas extends JPanel {
                 super.mousePressed(e);
                 lastMouseX = e.getX();
                 lastMouseY = e.getY();
+
+                Point2D graphPoint = toGraphCoords(e.getX(), e.getY());
+                draggedNode = findNodeAt(graphPoint.getX(), graphPoint.getY());
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
+                if (draggedNode != null) {
+                    Point2D graphPoint = toGraphCoords(e.getX(), e.getY());
+                    draggedNode.setX(graphPoint.getX());
+                    draggedNode.setY(graphPoint.getY());
+                    repaint();
+                    return;
+                }
+
                 int deltaX = e.getX() - lastMouseX;
                 int deltaY = e.getY() - lastMouseY;
 
@@ -76,6 +90,12 @@ public class GraphCanvas extends JPanel {
                 lastMouseY = e.getY();
 
                 repaint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                draggedNode = null;
             }
 
             @Override
@@ -103,6 +123,30 @@ public class GraphCanvas extends JPanel {
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
         addMouseWheelListener(mouseHandler);
+    }
+
+    private Point2D toGraphCoords(int mouseX, int mouseY) {
+        double graphX = (mouseX - offsetX) / scale;
+        double graphY = (mouseY - offsetY) / scale;
+        return new Point2D.Double(graphX, graphY);
+    }
+
+    private Node findNodeAt(double x, double y) {
+        if (graph == null || graph.getNodes() == null) {
+            return null;
+        }
+        double radiusSq = (double) dragRadius * dragRadius;
+        for (Node node : graph.getNodes()) {
+            if (node == null) {
+                continue;
+            }
+            double dx = node.getX() - x;
+            double dy = node.getY() - y;
+            if (dx * dx + dy * dy <= radiusSq) {
+                return node;
+            }
+        }
+        return null;
     }
 
     @Override

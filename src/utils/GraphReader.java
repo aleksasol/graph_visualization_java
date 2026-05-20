@@ -12,6 +12,7 @@ public class GraphReader {
     private Graph graph = new Graph();
     private String inputFilePath = null;
     private String outputFilePath = null;
+    private double coordinateScale = 6.0;
 
     public GraphReader(String sourceFilePath, String targetFilePath) {
         this.outputFilePath = targetFilePath;
@@ -36,7 +37,7 @@ public class GraphReader {
                 }
 
                 try {
-                    String[] result = currentLine.split(" ");
+                    String[] result = currentLine.split("\\s+");
                     if (result.length < 4) {
                         throw new IllegalArgumentException("Nieprawidłowy format linii: " + currentLine);
                     }
@@ -85,7 +86,7 @@ public class GraphReader {
                 }
 
                 try {
-                    String[] result = currentLine.split(" ");
+                    String[] result = currentLine.split("\\s+");
                     if (result.length < 3) {
                         throw new IllegalArgumentException("Nieprawidłowy format linii: " + currentLine);
                     }
@@ -105,6 +106,44 @@ public class GraphReader {
         }
     }
 
+    private void applyCoordinateScale() {
+        if (graph.getNodes() == null || graph.getNodes().isEmpty()) {
+            return;
+        }
+
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+
+        for (Node node : graph.getNodes()) {
+            if (node == null) {
+                continue;
+            }
+            minX = Math.min(minX, node.getX());
+            maxX = Math.max(maxX, node.getX());
+            minY = Math.min(minY, node.getY());
+            maxY = Math.max(maxY, node.getY());
+        }
+
+        if (minX == Double.POSITIVE_INFINITY || minY == Double.POSITIVE_INFINITY) {
+            return;
+        }
+
+        double centerX = (minX + maxX) / 2.0;
+        double centerY = (minY + maxY) / 2.0;
+
+        for (Node node : graph.getNodes()) {
+            if (node == null) {
+                continue;
+            }
+            double scaledX = centerX + (node.getX() - centerX) * coordinateScale;
+            double scaledY = centerY + (node.getY() - centerY) * coordinateScale;
+            node.setX(scaledX);
+            node.setY(scaledY);
+        }
+    }
+
     public void readGraph() throws Exception {
         if (inputFilePath == null || inputFilePath.isEmpty()) {
             throw new IllegalArgumentException("Ścieżka do pliku wejściowego nie jest ustawiona");
@@ -114,6 +153,7 @@ public class GraphReader {
         }
 
         readNodes(outputFilePath);
+        applyCoordinateScale();
         readEdges(inputFilePath);
     }
 
