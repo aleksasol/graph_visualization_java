@@ -180,10 +180,12 @@ public class GraphCanvas extends JPanel {
                         int x2 = (int) edge.getTarget().getX();
                         int y2 = (int) edge.getTarget().getY();
                         graphics2D.drawLine(x1, y1, x2, y2);
-                        
+
                         if (showEdgeWeights){
                             graphics2D.setColor(Color.BLACK);
-                            graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
+                            double trueDistance = Math.hypot(x2 - x1, y2 - y1);
+                            String distanceText = String.format(java.util.Locale.US, "%.1f", trueDistance);
+                            graphics2D.drawString(distanceText, (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
                         }
                     }
                 }
