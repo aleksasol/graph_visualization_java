@@ -183,7 +183,9 @@ public class GraphCanvas extends JPanel {
 
                         if (showEdgeWeights){
                             graphics2D.setColor(Color.BLACK);
-                            graphics2D.drawString(edge.getStringWeight(), (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
+                            double trueDistance = Math.hypot(x2 - x1, y2 - y1);
+                            String distanceText = String.format(java.util.Locale.US, "%.1f", trueDistance);
+                            graphics2D.drawString(distanceText, (x1 + x2) / 2 - 5, (y1 + y2) / 2 - 5);
                         }
                     }
                 }

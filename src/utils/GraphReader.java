@@ -6,8 +6,6 @@ import model.Node;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class GraphReader {
@@ -15,7 +13,6 @@ public class GraphReader {
     private String inputFilePath = null;
     private String outputFilePath = null;
     private double coordinateScale = 6.0;
-    private Map<String, Node> nodeByName = new HashMap<>();
 
     public GraphReader(String sourceFilePath, String targetFilePath) {
         this.outputFilePath = targetFilePath;
@@ -50,8 +47,8 @@ public class GraphReader {
                     String target_node_name = result[2];
                     Double weight = Double.parseDouble(result[3]);
 
-                    Node source_node = nodeByName.get(source_node_name);
-                    Node target_node = nodeByName.get(target_node_name);
+                    Node source_node = graph.findNodeByName(source_node_name);
+                    Node target_node = graph.findNodeByName(target_node_name);
 
                     if (source_node == null) {
                         throw new IllegalArgumentException("Węzeł źródłowy nie znaleziony: " + source_node_name);
@@ -98,13 +95,8 @@ public class GraphReader {
                     Double x = Double.parseDouble(result[1]);
                     Double y = Double.parseDouble(result[2]);
 
-                    if (nodeByName.containsKey(name)) {
-                        throw new IllegalArgumentException("Zduplikowana nazwa węzła: " + name);
-                    }
-
                     Node newNode = new Node(name, x, y);
                     graph.addNode(newNode);
-                    nodeByName.put(name, newNode);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Błąd parsowania liczby w linii: " + currentLine, e);
                 }
@@ -160,7 +152,6 @@ public class GraphReader {
             throw new IllegalArgumentException("Ścieżka do pliku wyjściowego nie jest ustawiona");
         }
 
-        nodeByName.clear();
         readNodes(outputFilePath);
         applyCoordinateScale();
         readEdges(inputFilePath);
