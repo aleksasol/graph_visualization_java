@@ -118,31 +118,25 @@ public class MainWindow extends JFrame {
 
                 String outputFilePath = "engine/results.txt";
                 String selectedAlgo = (String) toolbar.getAlgoSelector().getSelectedItem();
-                
+
                 if (selectedAlgo == null) {
                     throw new IllegalArgumentException("Nie wybrano algorytmu");
                 }
 
-                IntegrationManager worker = new IntegrationManager(inputFilePath, outputFilePath, selectedAlgo, () -> {
-                    toolbar.getRunCButton().setEnabled(true);
-                    toolbar.getAlgoSelector().setEnabled(true);
-                }){
-                    @Override
-                    protected void done(){
-                        super.done();
-                        try {
-                            if (!isCancelled()) {
-                                Graph calculatedGraph = get();
-                                if (calculatedGraph != null) {
-                                    canvas.setGraph(calculatedGraph);
-                                }
+                IntegrationManager worker = new IntegrationManager(
+                        inputFilePath,
+                        outputFilePath,
+                        selectedAlgo,
+                        () -> {
+                            toolbar.getRunCButton().setEnabled(true);
+                            toolbar.getAlgoSelector().setEnabled(true);
+                        },
+                        calculatedGraph -> {
+                            if (calculatedGraph != null) {
+                                canvas.setGraph(calculatedGraph);
                             }
-                        } catch (Exception exception) {
-                            System.err.println("Błąd podczas ustawiania grafu na canvas: " + exception.getMessage());
-                            exception.printStackTrace();
                         }
-                    }
-                };
+                );
                 worker.execute();
                 inputFilePath = null;
                 toolbar.styleButton(toolbar.getLoadInputFileButton());

@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class IntegrationManager extends SwingWorker<Graph, Void> {
 
@@ -15,14 +17,16 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
     private String outputFilePath;
     private String algorithm;
     private Runnable onComplete;
+    private Consumer<Graph> onSuccess;
 
     HashMap<String, String> algorithms = new HashMap<String, String>();
 
-    public IntegrationManager(String inputFilePath, String outputFilePath, String algorithm, Runnable onComplete) {
+    public IntegrationManager(String inputFilePath, String outputFilePath, String algorithm, Runnable onComplete, Consumer<Graph> onSuccess) {
         this.inputFilePath = inputFilePath;
         this.outputFilePath = outputFilePath;
         this.algorithm = algorithm;
         this.onComplete = onComplete;
+        this.onSuccess = onSuccess;
 
         algorithms.put("Fruchterman-Reingold", "1");
         algorithms.put("Tutte", "2");
@@ -73,8 +77,16 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
             builder.inheritIO();
 
             Process process = builder.start();
-            int exitCode = process.waitFor();
+            boolean finished = process.waitFor(60, TimeUnit.SECONDS);
+            if (!finished) {
+                process.destroy();
+                if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                    process.destroyForcibly();
+                }
+                throw new RuntimeException("Proces C przekroczył limit czasu (60s)");
+            }
 
+            int exitCode = process.exitValue();
             if (exitCode != 0 && exitCode != 1) {
                 throw new RuntimeException("Proces C zakończył się błędem. Kod wyjścia: " + exitCode);
             }
@@ -99,6 +111,10 @@ public class IntegrationManager extends SwingWorker<Graph, Void> {
                         "Błąd: Graf nie został prawidłowo obczony",
                         "Błąd",
                         JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (onSuccess != null) {
+                onSuccess.accept(resultGraph);
             }
         } catch (Exception e) {
             String errorMessage = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
